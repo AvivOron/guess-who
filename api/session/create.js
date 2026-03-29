@@ -1,6 +1,5 @@
-import { kv } from '@vercel/kv';
 import { createSession, generateCode } from '../_lib/gameLogic.js';
-import { saveSession, setPlayerIndex } from '../_lib/kv.js';
+import { getSession, saveSession, setPlayerIndex } from '../_lib/kv.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -12,7 +11,7 @@ export default async function handler(req, res) {
   let code;
   for (let i = 0; i < 10; i++) {
     const candidate = generateCode();
-    const existing = await kv.get(`session:${candidate}`);
+    const existing = await getSession(candidate);
     if (!existing) { code = candidate; break; }
   }
   if (!code) return res.status(500).json({ error: 'לא ניתן ליצור קוד ייחודי' });
