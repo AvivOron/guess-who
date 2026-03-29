@@ -8,7 +8,7 @@
     "install:all": "npm install && npm install --prefix client"
   },
   "dependencies": {
-    "@vercel/kv": "^2.0.0",
+    "@upstash/redis": "^1.34.3",
     "pusher": "^5.2.0"
   },
   "devDependencies": {
