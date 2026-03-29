@@ -71,7 +71,7 @@ export default function GameView() {
                 src={revealed.celebrity.imageUrl}
                 alt={revealed.celebrity.name}
                 className="celebrity-img"
-                onError={e => { e.target.src = '/images/placeholder.jpg'; }}
+                onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}
               />
               <div className="reveal-name">{revealed.celebrity.name}</div>
               <div className="reveal-badge">
@@ -95,7 +95,7 @@ export default function GameView() {
                 src={celebrity.imageUrl}
                 alt={celebrity.name}
                 className="celebrity-img"
-                onError={e => { e.target.src = '/images/placeholder.jpg'; }}
+                onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}
               />
               <div className="celebrity-name">{celebrity.name}</div>
               <div className="celebrity-hint">({celebrity.hint})</div>
