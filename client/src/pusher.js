@@ -26,12 +26,27 @@ function getPusher() {
   if (!pusherClient) {
     pusherClient = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
       cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-      channelAuthorization: {
-        endpoint: '/api/pusher-auth',
-        transport: 'ajax',
-        headersProvider: () => ({ 'Content-Type': 'application/x-www-form-urlencoded' }),
-        paramsProvider: () => ({ playerId }),
-      },
+      // Use a custom authorizer so we can include playerId at subscription time
+      authorizer: (channel) => ({
+        authorize: (socketId, callback) => {
+          const params = new URLSearchParams({
+            socket_id: socketId,
+            channel_name: channel.name,
+            playerId: playerId || '',
+          });
+          fetch('/api/pusher-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString(),
+          })
+            .then(r => r.json())
+            .then(data => {
+              if (data.error) callback(new Error(data.error), null);
+              else callback(null, data);
+            })
+            .catch(err => callback(err, null));
+        },
+      }),
     });
   }
   return pusherClient;
@@ -49,6 +64,11 @@ export function connectToPusher(pid, code) {
 
   presenceChannel = client.subscribe(`presence-session-${code}`);
   privateChannel  = client.subscribe(`private-player-${pid}`);
+
+  presenceChannel.bind('pusher:subscription_error', err => {
+    console.error('Presence channel auth error:', err);
+    emit('ERROR', { message: 'שגיאת חיבור לשרת – נסה לרענן את הדף' });
+  });
 
   const presenceEvents = [
     'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED',
