@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { send } from '../socket.js';
+import { send } from '../pusher.js';
 import { useGame } from '../store/gameStore.jsx';
 import confetti from 'canvas-confetti';
 

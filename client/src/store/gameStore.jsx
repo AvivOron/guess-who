@@ -42,11 +42,11 @@ function reducer(state, action) {
       return { ...state, players: action.payload.players };
 
     case 'PLAYER_LEFT': {
-      const newState = { ...state, players: action.payload.players };
-      if (action.payload.newInitiatorId === state.myPlayerId) {
-        newState.isInitiator = true;
-      }
-      return newState;
+      // payload.players may be null when coming from Pusher presence events
+      const players = action.payload.players
+        ? action.payload.players
+        : state.players.filter(p => p.id !== action.payload.playerId);
+      return { ...state, players };
     }
 
     case 'GAME_STARTED':
@@ -64,13 +64,17 @@ function reducer(state, action) {
       return {
         ...state,
         hotSeatPlayerId: action.payload.hotSeatPlayerId,
-        celebrity: action.payload.celebrity,
+        // Clear celebrity on new turn; CELEBRITY_ASSIGNED will set it for non-hot-seat players
+        celebrity: null,
         iAmOnHotSeat,
         questionLog: [],
         revealed: null,
         players: action.payload.players || state.players,
       };
     }
+
+    case 'CELEBRITY_ASSIGNED':
+      return { ...state, celebrity: action.payload.celebrity };
 
     case 'QUESTION_ASKED':
       return {

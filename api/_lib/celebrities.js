@@ -1,0 +1,17 @@
+export const celebrities = [
+  { id: "1",  name: "גל גדות",          hint: "שחקנית",           imageUrl: "/images/celebrities/gal_gadot.jpg" },
+  { id: "2",  name: "עומר אדם",          hint: "זמר",              imageUrl: "/images/celebrities/omer_adam.jpg" },
+  { id: "3",  name: "נועה קירל",         hint: "זמרת",             imageUrl: "/images/celebrities/noa_kirel.jpg" },
+  { id: "4",  name: "אייל גולן",         hint: "זמר",              imageUrl: "/images/celebrities/eyal_golan.jpg" },
+  { id: "5",  name: "מאיה בוסקילה",      hint: "זמרת",             imageUrl: "/images/celebrities/maya_buskila.jpg" },
+  { id: "6",  name: "בן אל תבורי",       hint: "זמר",              imageUrl: "/images/celebrities/ben_el.jpg" },
+  { id: "7",  name: "אסי עזר",           hint: "מגיש ויוצר",       imageUrl: "/images/celebrities/asi_azar.jpg" },
+  { id: "8",  name: "רותם סלע",          hint: "שחקנית ומגישה",    imageUrl: "/images/celebrities/rotem_sela.jpg" },
+  { id: "9",  name: "יהודה לוי",         hint: "שחקן וזמר",        imageUrl: "/images/celebrities/yehuda_levi.jpg" },
+  { id: "10", name: "שירי מימון",        hint: "זמרת",             imageUrl: "/images/celebrities/shiri_maimon.jpg" },
+  { id: "11", name: "עידן רייכל",        hint: "זמר ומוזיקאי",     imageUrl: "/images/celebrities/idan_raichel.jpg" },
+  { id: "12", name: "דנה אינטרנשיונל",   hint: "זמרת",             imageUrl: "/images/celebrities/dana_international.jpg" },
+  { id: "13", name: "משה פרץ",           hint: "זמר",              imageUrl: "/images/celebrities/moshe_peretz.jpg" },
+  { id: "14", name: "ליאור נרקיס",       hint: "זמר",              imageUrl: "/images/celebrities/lior_narkis.jpg" },
+  { id: "15", name: "אריאל זילבר",       hint: "זמר ומוזיקאי",     imageUrl: "/images/celebrities/ariel_zilber.jpg" },
+];

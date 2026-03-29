@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { send } from '../socket.js';
+import { send } from '../pusher.js';
 import { useGame } from '../store/gameStore.jsx';
 
 const PLAYER_COLORS = ['#FF6B6B','#4ECDC4','#FFE66D','#A78BFA','#F97316','#34D399','#60A5FA','#F472B6','#FBBF24','#6EE7B7'];

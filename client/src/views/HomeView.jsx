@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { send } from '../socket.js';
+import { send } from '../pusher.js';
 import { useGame } from '../store/gameStore.jsx';
 
 export default function HomeView() {
