@@ -1,45 +1,60 @@
-# ניחוש מי? 🎭
+# Guess Who? 🎭
 
-משחק ניחוש המפורסמים הישראלים – עד 10 שחקנים!
+Hebrew multiplayer guessing game featuring Israeli celebrities — up to 10 players per session.
 
-## איך משחקים
+## How it works
 
-1. מארגן יוצר משחק ומשתף קוד/קישור
-2. שחקנים מצטרפים
-3. מארגן לוחץ "התחל משחק"
-4. כל שחקן בתורו מקבל תמונת מפורסם ישראלי – אבל הוא לא רואה אותה!
-5. השחקן שואל שאלות כן/לא, השאר עונים
-6. מארגן לוחץ "ניחש נכון" / "לא נכון" ואז "תור הבא"
+1. The organizer creates a game and shares the code/link
+2. Players join with the code
+3. Organizer hits **Start Game**
+4. Each round, one player is in the "hot seat" — they receive a card of an Israeli celebrity but **cannot see it**
+5. The hot-seat player asks yes/no questions; everyone else can see the celebrity and answers
+6. Organizer clicks ✅ or ❌ then **Next Turn** to rotate
 
-## הרצה מקומית
+## Local development
 
 ```bash
 npm run install:all
 npm run dev
 ```
 
-Frontend: http://localhost:5173
-Backend: http://localhost:3001
+Frontend runs at http://localhost:5173 (Vite dev server)
+API runs via `vercel dev` on port 3000
 
-## הוספת תמונות מפורסמים
+## Adding celebrity photos
 
-הוסף תמונות לתיקייה `public/images/celebrities/` עם השמות המתאימים מ-`server/data/celebrities.js`.
+Drop JPG/PNG files into `public/images/celebrities/` using the filenames defined in [api/_lib/celebrities.js](api/_lib/celebrities.js).
 
-## פריסה
+## Deployment
 
-### Backend → Railway
+Everything deploys to **Vercel** (frontend static + serverless API).
 
-1. דחוף ל-GitHub
-2. צור פרויקט חדש ב-[Railway](https://railway.app)
-3. חבר את ה-repo
-4. הגדר Root Directory: `server`
-5. הגדר Start Command: `node index.js`
-6. הוסף Environment Variable: `CLIENT_ORIGIN=https://your-app.vercel.app`
+### Services required
 
-### Frontend → Vercel
+| Service | Purpose | Free tier |
+|---|---|---|
+| [Vercel](https://vercel.com) | Hosting + API | Yes |
+| [Pusher Channels](https://pusher.com) | Real-time events | Yes (200k msg/day) |
+| [Upstash Redis](https://upstash.com) | Session state | Yes (10k req/day) |
 
-1. צור פרויקט חדש ב-[Vercel](https://vercel.com)
-2. חבר את ה-repo
-3. הגדר Build Command: `npm run build --prefix client`
-4. הגדר Output Directory: `client/dist`
-5. הוסף Environment Variable: `VITE_WS_HOST=your-server.up.railway.app`
+### Environment variables
+
+Set these in the Vercel dashboard under **Settings → Environment Variables**:
+
+```
+PUSHER_APP_ID=
+PUSHER_KEY=
+PUSHER_SECRET=
+PUSHER_CLUSTER=
+VITE_PUSHER_KEY=       # same as PUSHER_KEY
+VITE_PUSHER_CLUSTER=   # same as PUSHER_CLUSTER
+KV_REST_API_URL=       # from Upstash dashboard
+KV_REST_API_TOKEN=     # from Upstash dashboard
+```
+
+### Deploy steps
+
+1. Push to GitHub
+2. Import the repo in Vercel — it will auto-detect `vercel.json`
+3. Add the environment variables above
+4. Deploy
