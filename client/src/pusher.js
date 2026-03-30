@@ -48,16 +48,19 @@ function getPusher() {
     }
     return pusherClient;
 }
-export function connectToPusher(pid, code) {
-    playerId = pid;
-    sessionCode = code;
+function resubscribe() {
+    if (!playerId || !sessionCode) return;
     const client = getPusher();
+    // Force reconnect if the socket dropped while in background
+    if (client.connection.state !== 'connected') {
+        client.connect();
+    }
     if (presenceChannel)
         client.unsubscribe(presenceChannel.name);
     if (privateChannel)
         client.unsubscribe(privateChannel.name);
-    presenceChannel = client.subscribe(`presence-session-${code}`);
-    privateChannel = client.subscribe(`private-player-${pid}`);
+    presenceChannel = client.subscribe(`presence-session-${sessionCode}`);
+    privateChannel = client.subscribe(`private-player-${playerId}`);
     presenceChannel.bind('pusher:subscription_error', (err) => {
         console.error('Presence channel auth error:', err);
         emit('ERROR', { message: 'שגיאת חיבור לשרת – נסה לרענן את הדף' });
@@ -73,6 +76,16 @@ export function connectToPusher(pid, code) {
     presenceChannel.bind('pusher:member_removed', (member) => {
         emit('PLAYER_LEFT', { playerId: member.id, players: null });
     });
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        resubscribe();
+    }
+});
+export function connectToPusher(pid, code) {
+    playerId = pid;
+    sessionCode = code;
+    resubscribe();
 }
 const ROUTES = {
     CREATE_SESSION: `${BASE}/api/session/create`,
