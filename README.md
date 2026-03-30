@@ -1,6 +1,6 @@
 # Guess Who? 🎭
 
-Hebrew multiplayer guessing game featuring Israeli celebrities — up to 10 players per session.
+Hebrew multiplayer guessing game — up to 10 players per session. Players take turns in the hot seat, asking yes/no questions to guess a hidden word from a chosen category.
 
 ## How it works
 
