@@ -55,7 +55,6 @@ function reducer(state, action) {
         view: 'game',
         phase: 'playing',
         players: action.payload.players,
-        categoryId: action.payload.categoryId,
         questionLog: [],
         revealed: null,
       };
@@ -65,6 +64,7 @@ function reducer(state, action) {
       return {
         ...state,
         hotSeatPlayerId: action.payload.hotSeatPlayerId,
+        categoryId: action.payload.categoryId || state.categoryId,
         item: null,
         iAmOnHotSeat,
         questionLog: [],

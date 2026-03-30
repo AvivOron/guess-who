@@ -1,4 +1,4 @@
-import { getCategoryById } from './categories.js';
+import { categories, getCategoryById } from './categories.js';
 
 export function generateCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -40,11 +40,9 @@ export function addPlayerToSession(session, playerId, playerName) {
   return { session };
 }
 
-export function startGame(session, categoryId) {
-  const category = getCategoryById(categoryId);
-  if (!category) return { error: 'קטגוריה לא נמצאה' };
+export function startGame(session) {
   session.phase = 'playing';
-  session.categoryId = categoryId;
+  session.categoryId = null;
   session.turnOrder = shuffle(session.players.map(p => p.id));
   session.turnIndex = 0;
   session.questionLog = [];
@@ -57,11 +55,18 @@ export function pickTurn(session) {
   session.currentTurnPlayerId = playerId;
   session.questionLog = [];
 
-  const category = getCategoryById(session.categoryId);
-  const available = category.items.filter(i => !session.usedItemIds.includes(i.id));
-  const pool = available.length > 0 ? available : category.items;
+  // Pick a random category, then a random unused item from it
+  const available = categories.flatMap(cat =>
+    cat.items
+      .filter(i => !session.usedItemIds.includes(i.id))
+      .map(i => ({ ...i, categoryId: cat.id }))
+  );
+  const pool = available.length > 0 ? available : categories.flatMap(cat =>
+    cat.items.map(i => ({ ...i, categoryId: cat.id }))
+  );
   const item = pool[Math.floor(Math.random() * pool.length)];
   session.currentItem = item;
+  session.categoryId = item.categoryId;
   session.usedItemIds.push(item.id);
 
   return session;

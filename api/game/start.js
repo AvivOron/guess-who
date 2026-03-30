@@ -5,15 +5,13 @@ import { pusher } from '../_lib/pusher.js';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { sessionCode, playerId, categoryId } = req.body;
+  const { sessionCode, playerId } = req.body;
   const session = await getSession(sessionCode);
   if (!session) return res.status(404).json({ error: 'סשן לא נמצא' });
   if (session.initiatorId !== playerId) return res.status(403).json({ error: 'רק מארגן המשחק יכול להתחיל' });
   if (session.players.length < 2) return res.status(400).json({ error: 'נדרשים לפחות 2 שחקנים' });
-  if (!categoryId) return res.status(400).json({ error: 'נדרש לבחור קטגוריה' });
 
-  const result = startGame(session, categoryId);
-  if (result.error) return res.status(400).json({ error: result.error });
+  startGame(session);
 
   pickTurn(session);
   await saveSession(session);
@@ -21,7 +19,6 @@ export default async function handler(req, res) {
   await pusher.trigger(`presence-session-${sessionCode}`, 'GAME_STARTED', {
     turnOrder: session.turnOrder,
     players: session.players,
-    categoryId: session.categoryId,
   });
 
   await broadcastTurn(session);
@@ -32,6 +29,7 @@ export default async function handler(req, res) {
 export async function broadcastTurn(session) {
   await pusher.trigger(`presence-session-${session.code}`, 'TURN_STARTED', {
     hotSeatPlayerId: session.currentTurnPlayerId,
+    categoryId: session.categoryId,
     players: session.players,
   });
 
