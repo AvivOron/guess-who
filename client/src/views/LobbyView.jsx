@@ -9,7 +9,7 @@ export default function LobbyView() {
   const { sessionCode, players, isInitiator } = state;
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = `${window.location.origin}?code=${sessionCode}`;
+  const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}?code=${sessionCode}`;
 
   function copyLink() {
     navigator.clipboard.writeText(shareUrl).then(() => {
