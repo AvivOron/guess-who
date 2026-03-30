@@ -2,6 +2,7 @@
   "name": "guess-who",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"vercel dev\" \"npm run dev --prefix client\"",
     "build": "cd client && npm install && npm run build",
@@ -9,10 +10,10 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.34.3",
+    "@vercel/node": "^3.0.0",
     "pusher": "^5.2.0"
   },
   "devDependencies": {
-    "@vercel/node": "^3.0.0",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.0"
   }
