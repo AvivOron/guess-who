@@ -117,6 +117,14 @@ export default function GameView() {
               {player.isInitiator && <span className="crown-badge">👑</span>}
             </div>
           ))}
+
+          {isInitiator && !revealed && questionLog.length > 0 && (
+            <div className="sidebar-reveal-controls">
+              <p className="sidebar-reveal-label">האם {hotSeatName} ניחש?</p>
+              <button className="btn btn-correct btn-sm" onClick={() => revealResult(true)}>✅ נכון</button>
+              <button className="btn btn-wrong btn-sm" onClick={() => revealResult(false)}>❌ לא נכון</button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -161,26 +169,20 @@ export default function GameView() {
             <input
               className="question-input"
               type="text"
-              placeholder="שאל שאלת כן/לא..."
+              placeholder={questionLog.length >= 10 ? 'הגעת למגבלת 10 שאלות' : 'שאל שאלת כן/לא...'}
               value={question}
               onChange={e => setQuestion(e.target.value)}
               maxLength={100}
               autoFocus
+              disabled={questionLog.length >= 10}
             />
-            <button className="btn btn-ask" type="submit" disabled={!question.trim()}>
+            <button className="btn btn-ask" type="submit" disabled={!question.trim() || questionLog.length >= 10}>
               שאל ❓
             </button>
+            <span className={`question-counter ${questionLog.length >= 10 ? 'counter-limit' : ''}`}>
+              {questionLog.length}/10
+            </span>
           </form>
-        )}
-
-        {isInitiator && !revealed && questionLog.length > 0 && (
-          <div className="reveal-controls">
-            <p className="reveal-label">האם {hotSeatName} ניחש נכון?</p>
-            <div className="reveal-buttons">
-              <button className="btn btn-correct" onClick={() => revealResult(true)}>✅ ניחש נכון!</button>
-              <button className="btn btn-wrong" onClick={() => revealResult(false)}>❌ לא נכון</button>
-            </div>
-          </div>
         )}
       </div>
     </div>

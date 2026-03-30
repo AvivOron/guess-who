@@ -13,6 +13,9 @@ export default async function handler(req, res) {
   if (session.currentTurnPlayerId !== playerId) {
     return res.status(403).json({ error: 'רק השחקן הנוכחי יכול לשאול שאלה' });
   }
+  if (session.questionLog.length >= 10) {
+    return res.status(400).json({ error: 'הגעת למגבלת 10 שאלות לתור' });
+  }
 
   const { question } = addQuestion(session, playerId, text.trim());
   await saveSession(session);
