@@ -36,7 +36,7 @@ export default function HomeView() {
       <div className="home-hero">
         <div className="home-emoji">🎭</div>
         <h1 className="home-title">ניחוש מי?</h1>
-        <p className="home-subtitle">משחק המפורסמים הישראלים</p>
+        <p className="home-subtitle">משחק הניחושים בקבוצה</p>
       </div>
 
       <div className="home-card">
