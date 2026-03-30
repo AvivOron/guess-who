@@ -7,6 +7,7 @@ export default function HomeView() {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [tab, setTab] = useState<'create' | 'join'>('create');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -17,18 +18,22 @@ export default function HomeView() {
     }
   }, []);
 
-  function handleCreate(e: React.FormEvent) {
+  async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
     dispatch({ type: 'SET_MY_NAME', payload: name.trim() });
-    send('CREATE_SESSION', { playerName: name.trim() });
+    setLoading(true);
+    await send('CREATE_SESSION', { playerName: name.trim() });
+    setLoading(false);
   }
 
-  function handleJoin(e: React.FormEvent) {
+  async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !code.trim()) return;
     dispatch({ type: 'SET_MY_NAME', payload: name.trim() });
-    send('JOIN_SESSION', { code: code.trim().toUpperCase(), playerName: name.trim() });
+    setLoading(true);
+    await send('JOIN_SESSION', { code: code.trim().toUpperCase(), playerName: name.trim() });
+    setLoading(false);
   }
 
   const tabBase = 'flex-1 py-4 border-none bg-transparent text-[#8892a4] font-semibold text-[0.95rem] cursor-pointer transition-all';
@@ -86,9 +91,9 @@ export default function HomeView() {
           <button
             className="w-full py-4 px-8 rounded-full font-bold text-[1.1rem] text-white bg-gradient-to-br from-[#FF6B6B] to-[#F97316] shadow-[0_4px_15px_rgba(255,107,107,0.3)] transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
             onClick={tab === 'create' ? handleCreate : handleJoin}
-            disabled={!name.trim() || (tab === 'join' && !code.trim())}
+            disabled={loading || !name.trim() || (tab === 'join' && !code.trim())}
           >
-            {tab === 'create' ? '🎮 צור משחק' : '🚀 הצטרף'}
+            {loading ? <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : tab === 'create' ? '🎮 צור משחק' : '🚀 הצטרף'}
           </button>
         </div>
       </div>

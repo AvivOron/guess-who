@@ -8,6 +8,7 @@ export default function LobbyView() {
   const { state } = useGame();
   const { sessionCode, players, isInitiator } = state;
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}?code=${sessionCode}`;
 
@@ -76,10 +77,11 @@ export default function LobbyView() {
             <p className="text-[#8892a4] text-center">ממתין לשחקנים נוספים... (נדרשים לפחות 2)</p>
           ) : (
             <button
-              className="w-full py-4 px-10 rounded-full font-black text-[1.2rem] text-[#1a1a2e] bg-gradient-to-br from-[#34D399] to-[#4ECDC4] shadow-[0_4px_20px_rgba(52,211,153,0.4)] transition-transform hover:-translate-y-0.5"
-              onClick={() => send('START_GAME')}
+              className="w-full py-4 px-10 rounded-full font-black text-[1.2rem] text-[#1a1a2e] bg-gradient-to-br from-[#34D399] to-[#4ECDC4] shadow-[0_4px_20px_rgba(52,211,153,0.4)] transition-transform hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={loading}
+              onClick={async () => { setLoading(true); await send('START_GAME'); setLoading(false); }}
             >
-              🚀 התחל משחק!
+              {loading ? <span className="inline-block w-5 h-5 border-2 border-[#1a1a2e]/30 border-t-[#1a1a2e] rounded-full animate-spin" /> : '🚀 התחל משחק!'}
             </button>
           )}
         </div>

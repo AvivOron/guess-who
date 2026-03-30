@@ -20,6 +20,7 @@ export default function GameView() {
   const { state } = useGame();
   const { players, hotSeatPlayerId, item, iAmOnHotSeat, questionLog, revealed, isInitiator, categoryId, sessionCode } = state;
   const [question, setQuestion] = useState('');
+  const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
   const logEndRef = useRef<HTMLDivElement>(null);
 
   const category = categories.find(c => c.id === categoryId);
@@ -34,11 +35,13 @@ export default function GameView() {
     }
   }, [revealed]);
 
-  function submitQuestion(e: React.FormEvent) {
+  async function submitQuestion(e: React.FormEvent) {
     e.preventDefault();
     if (!question.trim()) return;
-    send('ASK_QUESTION', { text: question.trim() });
+    setLoadingBtn('ask');
+    await send('ASK_QUESTION', { text: question.trim() });
     setQuestion('');
+    setLoadingBtn(null);
   }
 
   const hotSeatName = getPlayerName(players, hotSeatPlayerId);
@@ -78,9 +81,10 @@ export default function GameView() {
               {isInitiator && (
                 <button
                   className={`${btnBase} w-full mt-4 py-3 px-6 text-white bg-gradient-to-br from-[#A78BFA] to-[#60A5FA]`}
-                  onClick={() => send('NEXT_TURN')}
+                  disabled={loadingBtn === 'next'}
+                  onClick={async () => { setLoadingBtn('next'); await send('NEXT_TURN'); setLoadingBtn(null); }}
                 >
-                  ➡️ תור הבא
+                  {loadingBtn === 'next' ? <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '➡️ תור הבא'}
                 </button>
               )}
             </div>
@@ -129,16 +133,18 @@ export default function GameView() {
             <div className="mt-3 pt-3 border-t border-white/[0.12] flex flex-col gap-1.5">
               <p className="text-[#8892a4] text-xs font-semibold">האם {hotSeatName} ניחש?</p>
               <button
-                className="w-full py-1.5 px-2.5 rounded-full font-bold text-sm text-[#1a1a2e] bg-[#34D399] transition-transform hover:scale-[1.04]"
-                onClick={() => send('REVEAL_GUESS', { correct: true })}
+                className="w-full py-1.5 px-2.5 rounded-full font-bold text-sm text-[#1a1a2e] bg-[#34D399] transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={loadingBtn === 'reveal-correct' || loadingBtn === 'reveal-wrong'}
+                onClick={async () => { setLoadingBtn('reveal-correct'); await send('REVEAL_GUESS', { correct: true }); setLoadingBtn(null); }}
               >
-                ✅ נכון
+                {loadingBtn === 'reveal-correct' ? <span className="inline-block w-4 h-4 border-2 border-[#1a1a2e]/30 border-t-[#1a1a2e] rounded-full animate-spin" /> : '✅ נכון'}
               </button>
               <button
-                className="w-full py-1.5 px-2.5 rounded-full font-bold text-sm text-white bg-[#FF6B6B] transition-transform hover:scale-[1.04]"
-                onClick={() => send('REVEAL_GUESS', { correct: false })}
+                className="w-full py-1.5 px-2.5 rounded-full font-bold text-sm text-white bg-[#FF6B6B] transition-transform hover:scale-[1.04] disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={loadingBtn === 'reveal-correct' || loadingBtn === 'reveal-wrong'}
+                onClick={async () => { setLoadingBtn('reveal-wrong'); await send('REVEAL_GUESS', { correct: false }); setLoadingBtn(null); }}
               >
-                ❌ לא נכון
+                {loadingBtn === 'reveal-wrong' ? <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : '❌ לא נכון'}
               </button>
             </div>
           )}
@@ -172,14 +178,17 @@ export default function GameView() {
                   {(['כן', 'לא', 'אולי'] as const).map(ans => (
                     <button
                       key={ans}
-                      className={`px-3.5 py-1 rounded-full font-bold text-sm cursor-pointer transition-transform hover:scale-[1.08] border-none ${
+                      className={`px-3.5 py-1 rounded-full font-bold text-sm cursor-pointer transition-transform hover:scale-[1.08] border-none disabled:opacity-60 disabled:cursor-not-allowed ${
                         ans === 'כן'    ? 'bg-[#34D399] text-[#1a1a2e]' :
                         ans === 'לא'    ? 'bg-[#FF6B6B] text-white' :
                                           'bg-[#FFE66D] text-[#1a1a2e]'
                       }`}
-                      onClick={() => send('ANSWER_QUESTION', { questionId: q.id, answer: ans })}
+                      disabled={loadingBtn === `ans-${q.id}-${ans}`}
+                      onClick={async () => { setLoadingBtn(`ans-${q.id}-${ans}`); await send('ANSWER_QUESTION', { questionId: q.id, answer: ans }); setLoadingBtn(null); }}
                     >
-                      {ans}
+                      {loadingBtn === `ans-${q.id}-${ans}`
+                        ? <span className={`inline-block w-4 h-4 border-2 rounded-full animate-spin ${ans === 'לא' ? 'border-white/30 border-t-white' : 'border-[#1a1a2e]/30 border-t-[#1a1a2e]'}`} />
+                        : ans}
                     </button>
                   ))}
                 </div>
@@ -204,9 +213,9 @@ export default function GameView() {
             <button
               className="bg-[#4ECDC4] text-[#1a1a2e] px-4 py-2.5 rounded-full font-bold shrink-0 disabled:opacity-40 disabled:cursor-not-allowed transition-transform hover:not-disabled:-translate-y-0.5"
               type="submit"
-              disabled={!question.trim() || questionLog.length >= 10}
+              disabled={!question.trim() || questionLog.length >= 10 || loadingBtn === 'ask'}
             >
-              שאל ❓
+              {loadingBtn === 'ask' ? <span className="inline-block w-5 h-5 border-2 border-[#1a1a2e]/30 border-t-[#1a1a2e] rounded-full animate-spin" /> : 'שאל ❓'}
             </button>
             <span className={`text-sm shrink-0 min-w-[2.5rem] text-center ${questionLog.length >= 10 ? 'text-[#FF6B6B] font-bold' : 'text-[#8892a4]'}`}>
               {questionLog.length}/10
