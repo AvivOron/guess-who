@@ -34,7 +34,7 @@ function getPusher() {
             channel_name: channel.name,
             playerId: playerId || '',
           });
-          fetch('/api/pusher-auth', {
+          fetch(`${BASE}/api/pusher-auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString(),
@@ -87,14 +87,16 @@ export function connectToPusher(pid, code) {
 
 // ── HTTP-based send ────────────────────────────────────────────────────────
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 const ROUTES = {
-  CREATE_SESSION:  '/api/session/create',
-  JOIN_SESSION:    '/api/session/join',
-  START_GAME:      '/api/game/start',
-  ASK_QUESTION:    '/api/game/ask',
-  ANSWER_QUESTION: '/api/game/answer',
-  REVEAL_GUESS:    '/api/game/reveal',
-  NEXT_TURN:       '/api/game/next-turn',
+  CREATE_SESSION:  `${BASE}/api/session/create`,
+  JOIN_SESSION:    `${BASE}/api/session/join`,
+  START_GAME:      `${BASE}/api/game/start`,
+  ASK_QUESTION:    `${BASE}/api/game/ask`,
+  ANSWER_QUESTION: `${BASE}/api/game/answer`,
+  REVEAL_GUESS:    `${BASE}/api/game/reveal`,
+  NEXT_TURN:       `${BASE}/api/game/next-turn`,
 };
 
 export async function send(type, payload = {}) {
