@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { send } from '../pusher.js';
 import { useGame } from '../store/gameStore.jsx';
+import { categories } from '../categories.js';
 import confetti from 'canvas-confetti';
 
 const PLAYER_COLORS = ['#FF6B6B','#4ECDC4','#FFE66D','#A78BFA','#F97316','#34D399','#60A5FA','#F472B6','#FBBF24','#6EE7B7'];
@@ -16,9 +17,11 @@ function getPlayerName(players, playerId) {
 
 export default function GameView() {
   const { state } = useGame();
-  const { players, hotSeatPlayerId, celebrity, iAmOnHotSeat, questionLog, revealed, isInitiator, myPlayerId } = state;
+  const { players, hotSeatPlayerId, item, iAmOnHotSeat, questionLog, revealed, isInitiator, categoryId } = state;
   const [question, setQuestion] = useState('');
   const logEndRef = useRef(null);
+
+  const category = categories.find(c => c.id === categoryId);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,67 +44,61 @@ export default function GameView() {
     send('ANSWER_QUESTION', { questionId, answer: ans });
   }
 
-  function nextTurn() {
-    send('NEXT_TURN');
-  }
-
   function revealResult(correct) {
     send('REVEAL_GUESS', { correct });
   }
 
+  function nextTurn() {
+    send('NEXT_TURN');
+  }
+
   const hotSeatName = getPlayerName(players, hotSeatPlayerId);
+  const hotSeatColor = getPlayerColor(players, hotSeatPlayerId);
 
   return (
     <div className="game-view">
       {/* Header */}
       <div className="game-header">
         <span className="session-badge">🎭 {state.sessionCode}</span>
-        <div className="hot-seat-indicator" style={{ '--hs-color': getPlayerColor(players, hotSeatPlayerId) }}>
+        {category && <span className="category-badge">{category.emoji} {category.name}</span>}
+        <div className="hot-seat-indicator" style={{ '--hs-color': hotSeatColor }}>
           {iAmOnHotSeat ? '🔥 זה התור שלך!' : `🎯 ${hotSeatName} מנחש`}
         </div>
       </div>
 
       {/* Main area */}
       <div className="game-main">
-        {/* Celebrity card */}
-        <div className="celebrity-section">
+        <div className="item-section">
           {revealed ? (
             <div className={`reveal-card ${revealed.correct ? 'correct' : 'wrong'}`}>
-              <img
-                src={revealed.celebrity.imageUrl}
-                alt={revealed.celebrity.name}
-                className="celebrity-img"
-                onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}
-              />
-              <div className="reveal-name">{revealed.celebrity.name}</div>
+              <div className="reveal-item-name">{revealed.item.name}</div>
               <div className="reveal-badge">
                 {revealed.correct ? '🎉 נכון! ניצחתם!' : '❌ לא נכון...'}
               </div>
+              <div className="reveal-sub">
+                {revealed.hotSeatPlayerName} {revealed.correct ? 'ניחש נכון!' : 'לא הצליח לנחש'}
+              </div>
               {isInitiator && (
-                <button className="btn btn-next" onClick={nextTurn}>
-                  ➡️ תור הבא
-                </button>
+                <button className="btn btn-next" onClick={nextTurn}>➡️ תור הבא</button>
               )}
             </div>
           ) : iAmOnHotSeat ? (
             <div className="hot-seat-card">
-              <div className="mystery-icon">🃏</div>
+              <div className="mystery-icon">❓</div>
               <p className="hot-seat-text">מי אני?</p>
+              {category && <p className="hot-seat-category">{category.emoji} {category.name}</p>}
               <p className="hot-seat-sub">שאל שאלות כן/לא כדי לגלות!</p>
             </div>
-          ) : celebrity ? (
-            <div className="celebrity-card">
-              <img
-                src={celebrity.imageUrl}
-                alt={celebrity.name}
-                className="celebrity-img"
-                onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}
-              />
-              <div className="celebrity-name">{celebrity.name}</div>
-              <div className="celebrity-hint">({celebrity.hint})</div>
+          ) : item ? (
+            <div className="item-card">
+              <div className="item-category-label">{category?.emoji} {category?.name}</div>
+              <div className="item-name">{item.name}</div>
+              <div className="item-sub">רק אתה רואה את זה! 🤫</div>
             </div>
           ) : (
-            <div className="loading-card">טוען...</div>
+            <div className="item-card loading">
+              <div className="mystery-icon">⏳</div>
+            </div>
           )}
         </div>
 
@@ -123,11 +120,13 @@ export default function GameView() {
         </div>
       </div>
 
-      {/* Q&A Log */}
+      {/* Q&A */}
       <div className="qa-section">
         <div className="qa-log">
           {questionLog.length === 0 && (
-            <p className="qa-empty">עדיין אין שאלות. {iAmOnHotSeat ? 'שאל שאלה!' : `ממתין ל${hotSeatName}...`}</p>
+            <p className="qa-empty">
+              {iAmOnHotSeat ? 'שאל שאלת כן/לא!' : `ממתין ל${hotSeatName} לשאול שאלה...`}
+            </p>
           )}
           {questionLog.map((q, i) => (
             <div key={q.id} className="qa-item">
@@ -139,7 +138,7 @@ export default function GameView() {
                 <div className={`qa-answer answer-${q.answer === 'כן' ? 'yes' : q.answer === 'לא' ? 'no' : 'maybe'}`}>
                   {q.answer}
                 </div>
-              ) : !iAmOnHotSeat && myPlayerId !== hotSeatPlayerId && (
+              ) : !iAmOnHotSeat && (
                 <div className="qa-buttons">
                   {['כן', 'לא', 'אולי'].map(ans => (
                     <button
@@ -157,7 +156,6 @@ export default function GameView() {
           <div ref={logEndRef} />
         </div>
 
-        {/* Question input (hot seat only) */}
         {iAmOnHotSeat && !revealed && (
           <form className="question-form" onSubmit={submitQuestion}>
             <input
@@ -167,6 +165,7 @@ export default function GameView() {
               value={question}
               onChange={e => setQuestion(e.target.value)}
               maxLength={100}
+              autoFocus
             />
             <button className="btn btn-ask" type="submit" disabled={!question.trim()}>
               שאל ❓
@@ -174,7 +173,6 @@ export default function GameView() {
           </form>
         )}
 
-        {/* Reveal controls — initiator only, when not already revealed */}
         {isInitiator && !revealed && questionLog.length > 0 && (
           <div className="reveal-controls">
             <p className="reveal-label">האם {hotSeatName} ניחש נכון?</p>

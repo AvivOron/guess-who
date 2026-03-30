@@ -1,4 +1,4 @@
-import { celebrities } from './celebrities.js';
+import { getCategoryById } from './categories.js';
 
 export function generateCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -21,13 +21,14 @@ export function createSession(code, initiatorId, initiatorName) {
     code,
     initiatorId,
     phase: 'lobby',
+    categoryId: null,
     players: [{ id: initiatorId, name: initiatorName, isInitiator: true }],
     currentTurnPlayerId: null,
-    currentCelebrity: null,
+    currentItem: null,
     turnOrder: [],
     turnIndex: 0,
     questionLog: [],
-    usedCelebrityIds: [],
+    usedItemIds: [],
   };
 }
 
@@ -39,12 +40,16 @@ export function addPlayerToSession(session, playerId, playerName) {
   return { session };
 }
 
-export function startGame(session) {
+export function startGame(session, categoryId) {
+  const category = getCategoryById(categoryId);
+  if (!category) return { error: 'קטגוריה לא נמצאה' };
   session.phase = 'playing';
+  session.categoryId = categoryId;
   session.turnOrder = shuffle(session.players.map(p => p.id));
   session.turnIndex = 0;
   session.questionLog = [];
-  return session;
+  session.usedItemIds = [];
+  return { session };
 }
 
 export function pickTurn(session) {
@@ -52,11 +57,12 @@ export function pickTurn(session) {
   session.currentTurnPlayerId = playerId;
   session.questionLog = [];
 
-  const available = celebrities.filter(c => !session.usedCelebrityIds.includes(c.id));
-  const pool = available.length > 0 ? available : celebrities;
-  const celebrity = pool[Math.floor(Math.random() * pool.length)];
-  session.currentCelebrity = celebrity;
-  session.usedCelebrityIds.push(celebrity.id);
+  const category = getCategoryById(session.categoryId);
+  const available = category.items.filter(i => !session.usedItemIds.includes(i.id));
+  const pool = available.length > 0 ? available : category.items;
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  session.currentItem = item;
+  session.usedItemIds.push(item.id);
 
   return session;
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { send } from '../pusher.js';
 import { useGame } from '../store/gameStore.jsx';
+import { categories } from '../categories.js';
 
 const PLAYER_COLORS = ['#FF6B6B','#4ECDC4','#FFE66D','#A78BFA','#F97316','#34D399','#60A5FA','#F472B6','#FBBF24','#6EE7B7'];
 
@@ -8,6 +9,7 @@ export default function LobbyView() {
   const { state } = useGame();
   const { sessionCode, players, isInitiator } = state;
   const [copied, setCopied] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const shareUrl = `${window.location.origin}?code=${sessionCode}`;
 
@@ -19,8 +21,10 @@ export default function LobbyView() {
   }
 
   function startGame() {
-    send('START_GAME');
+    send('START_GAME', { categoryId: selectedCategory });
   }
+
+  const canStart = players.length >= 2 && selectedCategory;
 
   return (
     <div className="lobby-view">
@@ -51,7 +55,6 @@ export default function LobbyView() {
               {player.isInitiator && <span className="initiator-badge">👑</span>}
             </div>
           ))}
-
           {Array.from({ length: Math.max(0, 10 - players.length) }).map((_, i) => (
             <div key={`empty-${i}`} className="player-chip empty">
               <div className="player-avatar empty-avatar">?</div>
@@ -63,8 +66,24 @@ export default function LobbyView() {
 
       {isInitiator ? (
         <div className="start-section">
+          <h2 className="players-title">בחר קטגוריה</h2>
+          <div className="category-grid">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-btn ${selectedCategory === cat.id ? 'selected' : ''}`}
+                onClick={() => setSelectedCategory(cat.id)}
+              >
+                <span className="cat-emoji">{cat.emoji}</span>
+                <span className="cat-name">{cat.name}</span>
+              </button>
+            ))}
+          </div>
+
           {players.length < 2 ? (
             <p className="waiting-text">ממתין לשחקנים נוספים... (נדרשים לפחות 2)</p>
+          ) : !selectedCategory ? (
+            <p className="waiting-text">בחר קטגוריה כדי להתחיל</p>
           ) : (
             <button className="btn btn-start" onClick={startGame}>
               🚀 התחל משחק!

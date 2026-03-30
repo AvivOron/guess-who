@@ -21,9 +21,9 @@ npm run dev
 Frontend runs at http://localhost:5173 (Vite dev server)
 API runs via `vercel dev` on port 3000
 
-## Adding celebrity photos
+## Adding categories or items
 
-Drop JPG/PNG files into `public/images/celebrities/` using the filenames defined in [api/_lib/celebrities.js](api/_lib/celebrities.js).
+Edit [api/_lib/categories.js](api/_lib/categories.js) to add new categories or items. The same file is mirrored on the client at [client/src/categories.js](client/src/categories.js) (name and emoji only — no items needed client-side).
 
 ## Deployment
 

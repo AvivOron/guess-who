@@ -16,10 +16,10 @@ function AppInner() {
       on('PLAYER_LEFT',        p => dispatch({ type: 'PLAYER_LEFT',        payload: p })),
       on('GAME_STARTED',       p => dispatch({ type: 'GAME_STARTED',       payload: p })),
       on('TURN_STARTED',       p => dispatch({ type: 'TURN_STARTED',       payload: p })),
-      on('CELEBRITY_ASSIGNED', p => dispatch({ type: 'CELEBRITY_ASSIGNED', payload: p })),
+      on('ITEM_ASSIGNED',      p => dispatch({ type: 'ITEM_ASSIGNED',      payload: p })),
       on('QUESTION_ASKED',     p => dispatch({ type: 'QUESTION_ASKED',     payload: p })),
       on('QUESTION_ANSWERED',  p => dispatch({ type: 'QUESTION_ANSWERED',  payload: p })),
-      on('CELEBRITY_REVEALED', p => dispatch({ type: 'CELEBRITY_REVEALED', payload: p })),
+      on('ITEM_REVEALED',      p => dispatch({ type: 'ITEM_REVEALED',      payload: p })),
       on('ERROR',              p => dispatch({ type: 'SET_ERROR',          payload: p.message })),
     ];
     return () => unsubs.forEach(fn => fn());

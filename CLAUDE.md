@@ -23,7 +23,7 @@ Every API handler follows: read session from Redis → mutate with pure function
 ```
 api/
   _lib/
-    celebrities.js   # celebrity pool (add/edit celebrities here)
+    categories.js    # all categories and their items (add/edit here)
     gameLogic.js     # pure state mutation functions (no I/O)
     kv.js            # Upstash Redis helpers
     pusher.js        # Pusher server SDK singleton
@@ -44,12 +44,12 @@ client/src/
     HomeView.jsx     # Create or join session
     LobbyView.jsx    # Waiting room
     GameView.jsx     # Main game screen
-public/images/celebrities/  # Add celebrity photos here (JPG/PNG)
+client/src/categories.js     # Category name + emoji for client display
 ```
 
-## Adding celebrities
+## Adding categories or items
 
-Edit `api/_lib/celebrities.js` and add a photo to `public/images/celebrities/` with the matching filename.
+Edit `api/_lib/categories.js` to add/edit categories and their items (server-side, used for picking random items each turn). Also update `client/src/categories.js` with the category name and emoji (client-side, used for display in lobby and game header).
 
 ## Local dev
 

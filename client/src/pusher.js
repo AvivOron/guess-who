@@ -72,13 +72,13 @@ export function connectToPusher(pid, code) {
 
   const presenceEvents = [
     'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED',
-    'QUESTION_ASKED', 'QUESTION_ANSWERED', 'CELEBRITY_REVEALED',
+    'QUESTION_ASKED', 'QUESTION_ANSWERED', 'ITEM_REVEALED',
   ];
   presenceEvents.forEach(name => {
     presenceChannel.bind(name, payload => emit(name, payload));
   });
 
-  privateChannel.bind('CELEBRITY_ASSIGNED', payload => emit('CELEBRITY_ASSIGNED', payload));
+  privateChannel.bind('ITEM_ASSIGNED', payload => emit('ITEM_ASSIGNED', payload));
 
   presenceChannel.bind('pusher:member_removed', member => {
     emit('PLAYER_LEFT', { playerId: member.id, players: null });

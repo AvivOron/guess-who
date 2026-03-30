@@ -11,8 +11,8 @@ export default async function handler(req, res) {
 
   const hotSeatPlayerName = session.players.find(p => p.id === session.currentTurnPlayerId)?.name;
 
-  await pusher.trigger(`presence-session-${sessionCode}`, 'CELEBRITY_REVEALED', {
-    celebrity: session.currentCelebrity,
+  await pusher.trigger(`presence-session-${sessionCode}`, 'ITEM_REVEALED', {
+    item: session.currentItem,
     correct: !!correct,
     hotSeatPlayerId: session.currentTurnPlayerId,
     hotSeatPlayerName,

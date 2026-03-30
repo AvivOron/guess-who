@@ -1,18 +1,19 @@
 import React, { createContext, useContext, useReducer } from 'react';
 
 const initialState = {
-  view: 'home', // home | lobby | game
+  view: 'home',
   sessionCode: null,
   myPlayerId: null,
   myName: null,
   isInitiator: false,
   players: [],
   phase: 'lobby',
+  categoryId: null,
   hotSeatPlayerId: null,
-  celebrity: null,      // null if I'm on the hot seat
+  item: null,         // null when I'm on the hot seat
   iAmOnHotSeat: false,
   questionLog: [],
-  revealed: null,       // { celebrity, correct, hotSeatPlayerName }
+  revealed: null,     // { item, correct, hotSeatPlayerName }
   error: null,
 };
 
@@ -42,7 +43,6 @@ function reducer(state, action) {
       return { ...state, players: action.payload.players };
 
     case 'PLAYER_LEFT': {
-      // payload.players may be null when coming from Pusher presence events
       const players = action.payload.players
         ? action.payload.players
         : state.players.filter(p => p.id !== action.payload.playerId);
@@ -55,6 +55,7 @@ function reducer(state, action) {
         view: 'game',
         phase: 'playing',
         players: action.payload.players,
+        categoryId: action.payload.categoryId,
         questionLog: [],
         revealed: null,
       };
@@ -64,8 +65,7 @@ function reducer(state, action) {
       return {
         ...state,
         hotSeatPlayerId: action.payload.hotSeatPlayerId,
-        // Clear celebrity on new turn; CELEBRITY_ASSIGNED will set it for non-hot-seat players
-        celebrity: null,
+        item: null,
         iAmOnHotSeat,
         questionLog: [],
         revealed: null,
@@ -73,8 +73,8 @@ function reducer(state, action) {
       };
     }
 
-    case 'CELEBRITY_ASSIGNED':
-      return { ...state, celebrity: action.payload.celebrity };
+    case 'ITEM_ASSIGNED':
+      return { ...state, item: action.payload.item };
 
     case 'QUESTION_ASKED':
       return {
@@ -89,11 +89,11 @@ function reducer(state, action) {
       return { ...state, questionLog: log };
     }
 
-    case 'CELEBRITY_REVEALED':
+    case 'ITEM_REVEALED':
       return {
         ...state,
         revealed: {
-          celebrity: action.payload.celebrity,
+          item: action.payload.item,
           correct: action.payload.correct,
           hotSeatPlayerName: action.payload.hotSeatPlayerName,
         },
