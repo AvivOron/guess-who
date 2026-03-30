@@ -65,6 +65,11 @@ function resubscribe() {
         console.error('Presence channel auth error:', err);
         emit('ERROR', { message: 'שגיאת חיבור לשרת – נסה לרענן את הדף' });
     });
+    presenceChannel.bind('pusher:subscription_succeeded', (members) => {
+        const players = [];
+        members.each((member) => players.push({ id: member.id, isInitiator: false, ...member.info }));
+        emit('PLAYER_JOINED', { players });
+    });
     const presenceEvents = [
         'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED',
         'QUESTION_ASKED', 'QUESTION_ANSWERED', 'ITEM_REVEALED',
