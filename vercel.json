@@ -3,6 +3,7 @@
   "outputDirectory": "client/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/guess-who/assets/(.*)", "destination": "/guess-who/assets/$1" },
+    { "source": "/(.*)", "destination": "/guess-who/index.html" }
   ]
 }
