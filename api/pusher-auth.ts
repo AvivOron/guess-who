@@ -1,27 +1,25 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getSessionByPlayerId } from './_lib/kv.js';
 import { pusher } from './_lib/pusher.js';
 import { parse } from 'querystring';
 
-export default async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  // Pusher sends auth as application/x-www-form-urlencoded
-  // Vercel may or may not parse it automatically — handle both cases
-  let body = req.body;
+  let body = req.body as Record<string, string> | string | undefined;
   if (typeof body === 'string') {
-    body = parse(body);
+    body = parse(body) as Record<string, string>;
   }
-  // If body is empty (Vercel didn't parse urlencoded), read raw stream
-  if (!body || !body.socket_id) {
-    const raw = await new Promise((resolve) => {
+  if (!body || !(body as Record<string, string>).socket_id) {
+    const raw = await new Promise<string>((resolve) => {
       let data = '';
-      req.on('data', chunk => { data += chunk; });
+      req.on('data', (chunk: Buffer) => { data += chunk; });
       req.on('end', () => resolve(data));
     });
-    body = parse(raw);
+    body = parse(raw) as Record<string, string>;
   }
 
-  const { socket_id, channel_name, playerId } = body;
+  const { socket_id, channel_name, playerId } = body as Record<string, string>;
 
   if (!socket_id || !channel_name || !playerId) {
     return res.status(400).json({ error: 'Missing required fields', got: JSON.stringify(body) });

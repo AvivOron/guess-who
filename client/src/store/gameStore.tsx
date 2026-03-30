@@ -1,6 +1,9 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer } from 'react';
+import type { ReactNode } from 'react';
+import type { Dispatch } from 'react';
+import type { GameState, GameAction, Player } from '../types';
 
-const initialState = {
+const initialState: GameState = {
   view: 'home',
   sessionCode: null,
   myPlayerId: null,
@@ -10,14 +13,14 @@ const initialState = {
   phase: 'lobby',
   categoryId: null,
   hotSeatPlayerId: null,
-  item: null,         // null when I'm on the hot seat
+  item: null,
   iAmOnHotSeat: false,
   questionLog: [],
-  revealed: null,     // { item, correct, hotSeatPlayerName }
+  revealed: null,
   error: null,
 };
 
-function reducer(state, action) {
+function reducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'SESSION_CREATED':
       return {
@@ -43,7 +46,7 @@ function reducer(state, action) {
       return { ...state, players: action.payload.players };
 
     case 'PLAYER_LEFT': {
-      const players = action.payload.players
+      const players: Player[] = action.payload.players
         ? action.payload.players
         : state.players.filter(p => p.id !== action.payload.playerId);
       return { ...state, players };
@@ -64,12 +67,12 @@ function reducer(state, action) {
       return {
         ...state,
         hotSeatPlayerId: action.payload.hotSeatPlayerId,
-        categoryId: action.payload.categoryId || state.categoryId,
+        categoryId: action.payload.categoryId ?? state.categoryId,
         item: null,
         iAmOnHotSeat,
         questionLog: [],
         revealed: null,
-        players: action.payload.players || state.players,
+        players: action.payload.players ?? state.players,
       };
     }
 
@@ -102,6 +105,9 @@ function reducer(state, action) {
     case 'SET_MY_NAME':
       return { ...state, myName: action.payload };
 
+    case 'SET_PENDING_CODE':
+      return state; // handled in HomeView via URL params
+
     case 'SET_ERROR':
       return { ...state, error: action.payload };
 
@@ -113,9 +119,14 @@ function reducer(state, action) {
   }
 }
 
-const GameContext = createContext(null);
+interface GameContextValue {
+  state: GameState;
+  dispatch: Dispatch<GameAction>;
+}
 
-export function GameProvider({ children }) {
+const GameContext = createContext<GameContextValue | null>(null);
+
+export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <GameContext.Provider value={{ state, dispatch }}>
@@ -124,6 +135,8 @@ export function GameProvider({ children }) {
   );
 }
 
-export function useGame() {
-  return useContext(GameContext);
+export function useGame(): GameContextValue {
+  const ctx = useContext(GameContext);
+  if (!ctx) throw new Error('useGame must be used within GameProvider');
+  return ctx;
 }

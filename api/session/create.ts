@@ -1,14 +1,14 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createSession, generateCode } from '../_lib/gameLogic.js';
 import { getSession, saveSession, setPlayerIndex } from '../_lib/kv.js';
 
-export default async function handler(req, res) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { playerName } = req.body;
+  const { playerName } = req.body as { playerName?: string };
   if (!playerName?.trim()) return res.status(400).json({ error: 'נדרש שם שחקן' });
 
-  // Generate a unique code
-  let code;
+  let code: string | undefined;
   for (let i = 0; i < 10; i++) {
     const candidate = generateCode();
     const existing = await getSession(candidate);
