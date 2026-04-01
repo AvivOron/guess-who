@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF6B6B"/>
+      <stop offset="50%" style="stop-color:#F97316"/>
+      <stop offset="100%" style="stop-color:#FFE66D"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="210" x2="1200" y2="210" stroke="white" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="0" y1="420" x2="1200" y2="420" stroke="white" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="400" y1="0" x2="400" y2="630" stroke="white" stroke-opacity="0.03" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="630" stroke="white" stroke-opacity="0.03" stroke-width="1"/>
+
+  <!-- Glow orb -->
+  <circle cx="600" cy="315" r="260" fill="rgba(249,115,22,0.07)"/>
+  <circle cx="600" cy="315" r="160" fill="rgba(249,115,22,0.05)"/>
+
+  <!-- Emoji -->
+  <text x="600" y="260" font-size="140" text-anchor="middle" filter="url(#glow)">🎭</text>
+
+  <!-- Title -->
+  <text x="600" y="370" font-family="Heebo, Arial, sans-serif" font-size="88" font-weight="900" text-anchor="middle" fill="url(#title)">נחש מי</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="430" font-family="Heebo, Arial, sans-serif" font-size="32" font-weight="400" text-anchor="middle" fill="#8892a4">משחק הניחושים העברי</text>
+
+  <!-- Bottom URL -->
+  <text x="600" y="560" font-family="Heebo, Arial, sans-serif" font-size="24" font-weight="400" text-anchor="middle" fill="rgba(255,255,255,0.25)">avivo.dev/guess-who</text>
+</svg>
