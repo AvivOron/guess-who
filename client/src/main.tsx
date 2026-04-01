@@ -4,7 +4,7 @@ import App from './App';
 import './styles/global.css';
 import { inject } from '@vercel/analytics';
 
-inject({ dsn: "2b0949b76f688695" });
+inject({ scriptSrc: "/guess-who/_vercel/insights/script.js", endpoint: "/guess-who/_vercel/insights" });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
