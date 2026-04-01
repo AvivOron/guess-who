@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "puppeteer": "^24.40.0",
     "typescript": "^5.4.0"
   }
 }
