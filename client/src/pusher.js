@@ -48,27 +48,19 @@ function getPusher() {
     }
     return pusherClient;
 }
-function resubscribe() {
-    if (!playerId || !sessionCode) return;
+export function connectToPusher(pid, code) {
+    playerId = pid;
+    sessionCode = code;
     const client = getPusher();
-    // Force reconnect if the socket dropped while in background
-    if (client.connection.state !== 'connected') {
-        client.connect();
-    }
     if (presenceChannel)
         client.unsubscribe(presenceChannel.name);
     if (privateChannel)
         client.unsubscribe(privateChannel.name);
-    presenceChannel = client.subscribe(`presence-session-${sessionCode}`);
-    privateChannel = client.subscribe(`private-player-${playerId}`);
+    presenceChannel = client.subscribe(`presence-session-${code}`);
+    privateChannel = client.subscribe(`private-player-${pid}`);
     presenceChannel.bind('pusher:subscription_error', (err) => {
         console.error('Presence channel auth error:', err);
         emit('ERROR', { message: 'שגיאת חיבור לשרת – נסה לרענן את הדף' });
-    });
-    presenceChannel.bind('pusher:subscription_succeeded', (members) => {
-        const players = [];
-        members.each((member) => players.push({ id: member.id, isInitiator: false, ...member.info }));
-        emit('PLAYER_JOINED', { players });
     });
     const presenceEvents = [
         'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED',
@@ -81,16 +73,6 @@ function resubscribe() {
     presenceChannel.bind('pusher:member_removed', (member) => {
         emit('PLAYER_LEFT', { playerId: member.id, players: null });
     });
-}
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        resubscribe();
-    }
-});
-export function connectToPusher(pid, code) {
-    playerId = pid;
-    sessionCode = code;
-    resubscribe();
 }
 const ROUTES = {
     CREATE_SESSION: `${BASE}/api/session/create`,
