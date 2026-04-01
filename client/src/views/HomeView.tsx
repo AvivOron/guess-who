@@ -45,7 +45,7 @@ export default function HomeView() {
       <div className="text-center py-8">
         <div className="text-[5rem] animate-[float_3s_ease-in-out_infinite]">🎭</div>
         <h1 className="text-[2.8rem] font-black leading-[1.1] bg-gradient-to-br from-[#FF6B6B] via-[#FFE66D] to-[#4ECDC4] bg-clip-text text-transparent">
-          ניחוש מי?
+          נחש מי?
         </h1>
         <p className="text-[#8892a4] text-lg mt-2">משחק הניחושים בקבוצה</p>
       </div>
