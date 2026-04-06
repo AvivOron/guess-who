@@ -69,20 +69,32 @@ export function pickTurn(session: Session): Session {
   session.currentTurnPlayerId = playerId;
   session.questionLog = [];
 
-  const available = playableCategories.flatMap(cat =>
-    cat.items
-      .filter(i => !session.usedItemIds.includes(i.id))
-      .map(i => ({ ...i, categoryId: cat.id }))
-  );
-  const pool: Item[] = available.length > 0
-    ? available
-    : playableCategories.flatMap(cat => cat.items.map(i => ({ ...i, categoryId: cat.id })));
+  const categoriesWithFreshItems = playableCategories
+    .map(category => ({
+      category,
+      items: category.items.filter(item => !session.usedItemIds.includes(item.id)),
+    }))
+    .filter(({ items }) => items.length > 0);
 
-  if (pool.length === 0) {
+  const categoriesWithFallbackItems = playableCategories
+    .map(category => ({
+      category,
+      items: category.items,
+    }))
+    .filter(({ items }) => items.length > 0);
+
+  const categoryPool = categoriesWithFreshItems.length > 0
+    ? categoriesWithFreshItems
+    : categoriesWithFallbackItems;
+
+  if (categoryPool.length === 0) {
     throw new Error('No items available for selected categories');
   }
 
-  const item = pool[Math.floor(Math.random() * pool.length)]!;
+  const chosenCategory = categoryPool[Math.floor(Math.random() * categoryPool.length)]!;
+  const chosenItem = chosenCategory.items[Math.floor(Math.random() * chosenCategory.items.length)]!;
+  const item: Item = { ...chosenItem, categoryId: chosenCategory.category.id };
+
   session.currentItem = item;
   session.categoryId = item.categoryId;
   session.usedItemIds.push(item.id);
