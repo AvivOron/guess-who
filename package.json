@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vercel dev\" \"npm run dev --prefix client\"",
+    "dev": "npm run client & npm run api",
+    "client": "npm run dev --prefix client",
+    "api": "node --env-file=.env --import tsx/esm dev-server.ts",
     "build": "cd client && npm install && npm run build",
     "install:all": "npm install && npm install --prefix client"
   },
@@ -16,6 +18,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "puppeteer": "^24.40.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.4.0"
   }
 }
