@@ -47,7 +47,7 @@ export default function HomeView() {
         <h1 className="text-[2.8rem] font-black leading-[1.1] bg-gradient-to-br from-[#FF6B6B] via-[#FFE66D] to-[#4ECDC4] bg-clip-text text-transparent">
           נחש מי?
         </h1>
-        <p className="text-[#8892a4] text-lg mt-2">משחק הניחושים בקבוצה</p>
+        <p className="text-[#8892a4] text-lg mt-2">משחק ניחושים קבוצתי</p>
       </div>
 
       {/* Card */}
@@ -106,7 +106,6 @@ export default function HomeView() {
             '🃏 כל שחקן בתורו מקבל מילה סודית – אבל הוא לא רואה אותה!',
             '❓ השחקן שואל שאלות כן/לא כדי לנחש מה המילה',
             '👀 שאר השחקנים רואים את המילה ועונים על השאלות',
-            '🏆 מי שינחש הכי מהר מנצח!',
           ].map((rule, i) => (
             <li key={i} className="text-[0.95rem] leading-snug">{rule}</li>
           ))}
