@@ -72,7 +72,7 @@ export function connectToPusher(pid: string, code: string) {
   });
 
   const presenceEvents = [
-    'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED',
+    'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED', 'SETTINGS_UPDATED',
     'QUESTION_ASKED', 'QUESTION_ANSWERED', 'ITEM_REVEALED',
   ];
   presenceEvents.forEach(name => {
@@ -91,6 +91,7 @@ export function connectToPusher(pid: string, code: string) {
 export type SendType =
   | 'CREATE_SESSION'
   | 'JOIN_SESSION'
+  | 'UPDATE_SETTINGS'
   | 'START_GAME'
   | 'ASK_QUESTION'
   | 'ANSWER_QUESTION'
@@ -100,6 +101,7 @@ export type SendType =
 const ROUTES: Record<SendType, string> = {
   CREATE_SESSION:  `${BASE}/api/session/create`,
   JOIN_SESSION:    `${BASE}/api/session/join`,
+  UPDATE_SETTINGS: `${BASE}/api/session/update-settings`,
   START_GAME:      `${BASE}/api/game/start`,
   ASK_QUESTION:    `${BASE}/api/game/ask`,
   ANSWER_QUESTION: `${BASE}/api/game/answer`,

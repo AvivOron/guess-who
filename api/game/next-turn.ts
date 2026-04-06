@@ -12,7 +12,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (session.initiatorId !== playerId) return res.status(403).json({ error: 'רק מארגן המשחק יכול להמשיך' });
 
   session.turnIndex++;
-  pickTurn(session);
+  try {
+    pickTurn(session);
+  } catch {
+    return res.status(400).json({ error: 'אין מילים זמינות בקטגוריות שנבחרו' });
+  }
   await saveSession(session);
 
   await broadcastTurn(session);

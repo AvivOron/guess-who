@@ -15,6 +15,7 @@ function AppInner() {
       on('SESSION_JOINED',    p => dispatch({ type: 'SESSION_JOINED',    payload: p } as GameAction)),
       on('PLAYER_JOINED',     p => dispatch({ type: 'PLAYER_JOINED',     payload: p } as GameAction)),
       on('PLAYER_LEFT',       p => dispatch({ type: 'PLAYER_LEFT',       payload: p } as GameAction)),
+      on('SETTINGS_UPDATED',  p => dispatch({ type: 'SETTINGS_UPDATED',  payload: p } as GameAction)),
       on('GAME_STARTED',      p => dispatch({ type: 'GAME_STARTED',      payload: p } as GameAction)),
       on('TURN_STARTED',      p => dispatch({ type: 'TURN_STARTED',      payload: p } as GameAction)),
       on('ITEM_ASSIGNED',     p => dispatch({ type: 'ITEM_ASSIGNED',     payload: p } as GameAction)),

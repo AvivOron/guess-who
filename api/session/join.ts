@@ -31,5 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     playerId,
     players: result.session.players,
     phase: result.session.phase,
+    availableCategories: result.session.availableCategories,
+    selectedCategoryIds: result.session.selectedCategoryIds,
   });
 }

@@ -1,5 +1,10 @@
-import { categories } from './categories.js';
-import type { Session, Question, Item } from './types.js';
+import { getDefaultCategories } from './categories.js';
+import type { Session, Question, Item, Category } from './types.js';
+
+function getPlayableCategories(session: Session): Category[] {
+  const selectedIds = new Set(session.selectedCategoryIds);
+  return session.availableCategories.filter(category => selectedIds.has(category.id));
+}
 
 export function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -18,11 +23,14 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export function createSession(code: string, initiatorId: string, initiatorName: string): Session {
+  const availableCategories = getDefaultCategories();
   return {
     code,
     initiatorId,
     phase: 'lobby',
     categoryId: null,
+    availableCategories,
+    selectedCategoryIds: availableCategories.map(category => category.id),
     players: [{ id: initiatorId, name: initiatorName, isInitiator: true }],
     currentTurnPlayerId: null,
     currentItem: null,
@@ -56,18 +64,23 @@ export function startGame(session: Session): { session: Session } {
 }
 
 export function pickTurn(session: Session): Session {
+  const playableCategories = getPlayableCategories(session);
   const playerId = session.turnOrder[session.turnIndex % session.turnOrder.length]!;
   session.currentTurnPlayerId = playerId;
   session.questionLog = [];
 
-  const available = categories.flatMap(cat =>
+  const available = playableCategories.flatMap(cat =>
     cat.items
       .filter(i => !session.usedItemIds.includes(i.id))
       .map(i => ({ ...i, categoryId: cat.id }))
   );
   const pool: Item[] = available.length > 0
     ? available
-    : categories.flatMap(cat => cat.items.map(i => ({ ...i, categoryId: cat.id })));
+    : playableCategories.flatMap(cat => cat.items.map(i => ({ ...i, categoryId: cat.id })));
+
+  if (pool.length === 0) {
+    throw new Error('No items available for selected categories');
+  }
 
   const item = pool[Math.floor(Math.random() * pool.length)]!;
   session.currentItem = item;

@@ -126,3 +126,13 @@ export const categories: Category[] = [
 export function getCategoryById(id: string): Category | null {
   return categories.find(c => c.id === id) ?? null;
 }
+
+export function getDefaultCategories(): Category[] {
+  return categories.map(category => ({
+    ...category,
+    items: category.items.map(item => ({
+      id: item.id,
+      name: item.name,
+    })),
+  }));
+}

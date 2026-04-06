@@ -2,6 +2,16 @@ import { createContext, useContext, useReducer } from 'react';
 import type { ReactNode } from 'react';
 import type { Dispatch } from 'react';
 import type { GameState, GameAction, Player } from '../types';
+import { categories as defaultCategories } from '../categories';
+
+function normalizeCategories(categories: GameState['availableCategories']): GameState['availableCategories'] {
+  return categories.map(category => ({
+    ...category,
+    items: (category.items ?? []).map(item =>
+      typeof item === 'string' ? item : item.name
+    ),
+  }));
+}
 
 const initialState: GameState = {
   view: 'home',
@@ -12,6 +22,8 @@ const initialState: GameState = {
   players: [],
   phase: 'lobby',
   categoryId: null,
+  availableCategories: defaultCategories,
+  selectedCategoryIds: defaultCategories.map(category => category.id),
   hotSeatPlayerId: null,
   item: null,
   iAmOnHotSeat: false,
@@ -30,6 +42,8 @@ function reducer(state: GameState, action: GameAction): GameState {
         myPlayerId: action.payload.playerId,
         players: action.payload.players,
         isInitiator: true,
+        availableCategories: normalizeCategories(action.payload.availableCategories),
+        selectedCategoryIds: action.payload.selectedCategoryIds,
       };
 
     case 'SESSION_JOINED':
@@ -40,6 +54,8 @@ function reducer(state: GameState, action: GameAction): GameState {
         myPlayerId: action.payload.playerId,
         players: action.payload.players,
         isInitiator: false,
+        availableCategories: normalizeCategories(action.payload.availableCategories),
+        selectedCategoryIds: action.payload.selectedCategoryIds,
       };
 
     case 'PLAYER_JOINED':
@@ -58,6 +74,10 @@ function reducer(state: GameState, action: GameAction): GameState {
         view: 'game',
         phase: 'playing',
         players: action.payload.players,
+        availableCategories: action.payload.availableCategories
+          ? normalizeCategories(action.payload.availableCategories)
+          : state.availableCategories,
+        selectedCategoryIds: action.payload.selectedCategoryIds ?? state.selectedCategoryIds,
         questionLog: [],
         revealed: null,
       };
@@ -75,6 +95,13 @@ function reducer(state: GameState, action: GameAction): GameState {
         players: action.payload.players ?? state.players,
       };
     }
+
+    case 'SETTINGS_UPDATED':
+      return {
+        ...state,
+        availableCategories: normalizeCategories(action.payload.availableCategories),
+        selectedCategoryIds: action.payload.selectedCategoryIds,
+      };
 
     case 'ITEM_ASSIGNED':
       return { ...state, item: action.payload.item };

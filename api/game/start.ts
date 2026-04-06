@@ -12,14 +12,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!session) return res.status(404).json({ error: 'סשן לא נמצא' });
   if (session.initiatorId !== playerId) return res.status(403).json({ error: 'רק מארגן המשחק יכול להתחיל' });
   if (session.players.length < 2) return res.status(400).json({ error: 'נדרשים לפחות 2 שחקנים' });
+  if (session.selectedCategoryIds.length === 0) return res.status(400).json({ error: 'צריך לבחור לפחות קטגוריה אחת' });
 
   startGame(session);
-  pickTurn(session);
+  try {
+    pickTurn(session);
+  } catch {
+    return res.status(400).json({ error: 'אין מילים זמינות בקטגוריות שנבחרו' });
+  }
   await saveSession(session);
 
   await pusher.trigger(`presence-session-${sessionCode}`, 'GAME_STARTED', {
     turnOrder: session.turnOrder,
     players: session.players,
+    availableCategories: session.availableCategories,
+    selectedCategoryIds: session.selectedCategoryIds,
   });
 
   await broadcastTurn(session);

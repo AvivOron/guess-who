@@ -10,6 +10,19 @@ export interface Item {
   categoryId?: string;
 }
 
+export interface CategoryWord {
+  id?: string;
+  name: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  emoji: string;
+  items?: Array<string | CategoryWord>;
+  isCustom?: boolean;
+}
+
 export interface Question {
   id: string;
   askerId: string;
@@ -36,6 +49,8 @@ export interface GameState {
   players: Player[];
   phase: Phase;
   categoryId: string | null;
+  availableCategories: Category[];
+  selectedCategoryIds: string[];
   hotSeatPlayerId: string | null;
   item: Item | null;
   iAmOnHotSeat: boolean;
@@ -45,12 +60,13 @@ export interface GameState {
 }
 
 export type GameAction =
-  | { type: 'SESSION_CREATED'; payload: { sessionCode: string; playerId: string; players: Player[] } }
-  | { type: 'SESSION_JOINED'; payload: { sessionCode: string; playerId: string; players: Player[] } }
+  | { type: 'SESSION_CREATED'; payload: { sessionCode: string; playerId: string; players: Player[]; availableCategories: Category[]; selectedCategoryIds: string[] } }
+  | { type: 'SESSION_JOINED'; payload: { sessionCode: string; playerId: string; players: Player[]; availableCategories: Category[]; selectedCategoryIds: string[] } }
   | { type: 'PLAYER_JOINED'; payload: { players: Player[] } }
   | { type: 'PLAYER_LEFT'; payload: { playerId: string; players: Player[] | null } }
-  | { type: 'GAME_STARTED'; payload: { players: Player[] } }
+  | { type: 'GAME_STARTED'; payload: { players: Player[]; availableCategories?: Category[]; selectedCategoryIds?: string[] } }
   | { type: 'TURN_STARTED'; payload: { hotSeatPlayerId: string; categoryId?: string; players?: Player[] } }
+  | { type: 'SETTINGS_UPDATED'; payload: { availableCategories: Category[]; selectedCategoryIds: string[] } }
   | { type: 'ITEM_ASSIGNED'; payload: { item: Item } }
   | { type: 'QUESTION_ASKED'; payload: { question: Question } }
   | { type: 'QUESTION_ANSWERED'; payload: { question: Question } }

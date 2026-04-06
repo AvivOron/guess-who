@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { send } from '../pusher';
 import { useGame } from '../store/gameStore';
-import { categories } from '../categories';
 import confetti from 'canvas-confetti';
 import type { Player } from '../types';
 
@@ -18,12 +17,12 @@ function getPlayerName(players: Player[], playerId: string | null): string {
 
 export default function GameView() {
   const { state } = useGame();
-  const { players, hotSeatPlayerId, item, iAmOnHotSeat, questionLog, revealed, isInitiator, categoryId, sessionCode } = state;
+  const { players, hotSeatPlayerId, item, iAmOnHotSeat, questionLog, revealed, isInitiator, categoryId, sessionCode, availableCategories } = state;
   const [question, setQuestion] = useState('');
   const [loadingBtn, setLoadingBtn] = useState<string | null>(null);
   const logEndRef = useRef<HTMLDivElement>(null);
 
-  const category = categories.find(c => c.id === categoryId);
+  const category = availableCategories.find(c => c.id === categoryId);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });

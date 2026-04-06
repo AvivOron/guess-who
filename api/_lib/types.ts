@@ -10,6 +10,19 @@ export interface Item {
   categoryId: string;
 }
 
+export interface CategoryItem {
+  id: string;
+  name: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  emoji: string;
+  items: CategoryItem[];
+  isCustom?: boolean;
+}
+
 export interface Question {
   id: string;
   askerId: string;
@@ -23,6 +36,8 @@ export interface Session {
   initiatorId: string;
   phase: 'lobby' | 'playing';
   categoryId: string | null;
+  availableCategories: Category[];
+  selectedCategoryIds: string[];
   players: Player[];
   currentTurnPlayerId: string | null;
   currentItem: Item | null;

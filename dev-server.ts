@@ -9,6 +9,7 @@ const API_DIR = path.resolve('./api');
 const routes: Record<string, string> = {
   'POST /api/session/create':  `${API_DIR}/session/create.ts`,
   'POST /api/session/join':    `${API_DIR}/session/join.ts`,
+  'POST /api/session/update-settings': `${API_DIR}/session/update-settings.ts`,
   'POST /api/game/start':      `${API_DIR}/game/start.ts`,
   'POST /api/game/ask':        `${API_DIR}/game/ask.ts`,
   'POST /api/game/answer':     `${API_DIR}/game/answer.ts`,

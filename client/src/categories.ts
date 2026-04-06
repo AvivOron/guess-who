@@ -1,8 +1,4 @@
-export interface Category {
-  id: string;
-  name: string;
-  emoji: string;
-}
+import type { Category } from './types';
 
 export const categories: Category[] = [
   { id: 'animals',     name: 'בעלי חיים', emoji: '🐾' },

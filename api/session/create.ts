@@ -22,5 +22,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   await saveSession(session);
   await setPlayerIndex(playerId, code);
 
-  return res.status(200).json({ sessionCode: code, playerId, players: session.players });
+  return res.status(200).json({
+    sessionCode: code,
+    playerId,
+    players: session.players,
+    availableCategories: session.availableCategories,
+    selectedCategoryIds: session.selectedCategoryIds,
+  });
 }
