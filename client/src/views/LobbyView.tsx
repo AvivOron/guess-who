@@ -10,7 +10,7 @@ export default function LobbyView() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}?code=${sessionCode}`;
+  const shareUrl = `${window.location.origin}/guess-who/play?code=${sessionCode}`;
 
   function copyLink() {
     navigator.clipboard.writeText(shareUrl).then(() => {
