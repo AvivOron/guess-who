@@ -295,12 +295,12 @@ export default function LobbyView() {
 
       {isInitiator ? (
         <div className="flex flex-col gap-4">
-          {players.length < 2 ? (
-            <p className="text-[#8892a4] text-center">ממתין לשחקנים נוספים... (נדרשים לפחות 2)</p>
+          {players.length < 4 ? (
+            <p className="text-[#8892a4] text-center">ממתין לשחקנים נוספים... (נדרשים לפחות 4 לחלוקה לקבוצות)</p>
           ) : (
             <button
               className="w-full py-4 px-10 rounded-full font-black text-[1.2rem] text-[#1a1a2e] bg-gradient-to-br from-[#34D399] to-[#4ECDC4] shadow-[0_4px_20px_rgba(52,211,153,0.4)] transition-transform hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
-              disabled={loading || saving || hasUnsavedChanges || !hasSelectedCategories}
+              disabled={loading || saving || hasUnsavedChanges || !hasSelectedCategories || players.length < 4}
               onClick={async () => { setLoading(true); await send('START_GAME'); setLoading(false); }}
             >
               {loading ? <span className="inline-block w-5 h-5 border-2 border-[#1a1a2e]/30 border-t-[#1a1a2e] rounded-full animate-spin" /> : '🚀 התחל משחק!'}

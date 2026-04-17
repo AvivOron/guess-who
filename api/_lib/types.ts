@@ -45,4 +45,9 @@ export interface Session {
   turnIndex: number;
   questionLog: Question[];
   usedItemIds: string[];
+  // Team mode fields
+  groups: [string[], string[]]; // [groupA playerIds, groupB playerIds]
+  scores: [number, number];     // [groupA score, groupB score]
+  guessingGroupIndex: 0 | 1;    // which group is currently guessing
+  timerStartedAt: number | null; // ms timestamp when current turn timer started
 }

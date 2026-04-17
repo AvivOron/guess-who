@@ -21,5 +21,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   await broadcastTurn(session);
 
+
   return res.status(200).json({ ok: true });
 }

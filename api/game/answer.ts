@@ -19,8 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const session = await getSession(sessionCode ?? '');
   if (!session) return res.status(404).json({ error: 'סשן לא נמצא' });
-  if (session.currentTurnPlayerId === playerId) {
-    return res.status(403).json({ error: 'אתה לא יכול לענות על שאלות שלך' });
+  // Only the answering group can answer questions
+  const answeringGroupIndex = session.guessingGroupIndex === 0 ? 1 : 0;
+  const answeringGroup = session.groups[answeringGroupIndex];
+  if (!answeringGroup.includes(playerId ?? '')) {
+    return res.status(403).json({ error: 'רק הקבוצה שיודעת את המילה יכולה לענות' });
   }
 
   const result = answerQuestion(session, questionId ?? '', answer!);

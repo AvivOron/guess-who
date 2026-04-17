@@ -21,7 +21,7 @@ function AppInner() {
       on('ITEM_ASSIGNED',     p => dispatch({ type: 'ITEM_ASSIGNED',     payload: p } as GameAction)),
       on('QUESTION_ASKED',    p => dispatch({ type: 'QUESTION_ASKED',    payload: p } as GameAction)),
       on('QUESTION_ANSWERED', p => dispatch({ type: 'QUESTION_ANSWERED', payload: p } as GameAction)),
-      on('ITEM_REVEALED',     p => dispatch({ type: 'ITEM_REVEALED',     payload: p } as GameAction)),
+      on('TURN_RESULT',       p => dispatch({ type: 'TURN_RESULT',       payload: p } as GameAction)),
       on('ERROR',             p => dispatch({ type: 'SET_ERROR', payload: (p as { message: string }).message })),
     ];
     return () => unsubs.forEach(fn => fn());

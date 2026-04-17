@@ -38,6 +38,10 @@ export function createSession(code: string, initiatorId: string, initiatorName: 
     turnIndex: 0,
     questionLog: [],
     usedItemIds: [],
+    groups: [[], []],
+    scores: [0, 0],
+    guessingGroupIndex: 0,
+    timerStartedAt: null,
   };
 }
 
@@ -60,13 +64,36 @@ export function startGame(session: Session): { session: Session } {
   session.turnIndex = 0;
   session.questionLog = [];
   session.usedItemIds = [];
+
+  // Split players into two groups
+  const shuffled = shuffle(session.players.map(p => p.id));
+  const mid = Math.ceil(shuffled.length / 2);
+  session.groups = [shuffled.slice(0, mid), shuffled.slice(mid)];
+  session.scores = [0, 0];
+  session.guessingGroupIndex = 0;
+
+  return { session };
+}
+
+export function submitTurnResult(
+  session: Session,
+  correct: boolean,
+): { session: Session } {
+  if (correct) {
+    session.scores[session.guessingGroupIndex]++;
+  }
+  // Swap which group guesses next
+  session.guessingGroupIndex = session.guessingGroupIndex === 0 ? 1 : 0;
   return { session };
 }
 
 export function pickTurn(session: Session): Session {
   const playableCategories = getPlayableCategories(session);
-  const playerId = session.turnOrder[session.turnIndex % session.turnOrder.length]!;
+  // Pick a representative from the guessing group as the "hot seat" display player
+  const guessingGroup = session.groups[session.guessingGroupIndex];
+  const playerId = guessingGroup[session.turnIndex % guessingGroup.length]!;
   session.currentTurnPlayerId = playerId;
+  session.timerStartedAt = Date.now();
   session.questionLog = [];
 
   const categoriesWithFreshItems = playableCategories

@@ -13,8 +13,9 @@ const routes: Record<string, string> = {
   'POST /api/game/start':      `${API_DIR}/game/start.ts`,
   'POST /api/game/ask':        `${API_DIR}/game/ask.ts`,
   'POST /api/game/answer':     `${API_DIR}/game/answer.ts`,
-  'POST /api/game/reveal':     `${API_DIR}/game/reveal.ts`,
-  'POST /api/game/next-turn':  `${API_DIR}/game/next-turn.ts`,
+  'POST /api/game/reveal':         `${API_DIR}/game/reveal.ts`,
+  'POST /api/game/submit-result':  `${API_DIR}/game/submit-result.ts`,
+  'POST /api/game/next-turn':      `${API_DIR}/game/next-turn.ts`,
   'POST /api/pusher-auth':     `${API_DIR}/pusher-auth.ts`,
 };
 

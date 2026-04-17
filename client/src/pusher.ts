@@ -73,7 +73,7 @@ export function connectToPusher(pid: string, code: string) {
 
   const presenceEvents = [
     'PLAYER_JOINED', 'GAME_STARTED', 'TURN_STARTED', 'SETTINGS_UPDATED',
-    'QUESTION_ASKED', 'QUESTION_ANSWERED', 'ITEM_REVEALED',
+    'QUESTION_ASKED', 'QUESTION_ANSWERED', 'TURN_RESULT',
   ];
   presenceEvents.forEach(name => {
     presenceChannel!.bind(name, (payload: unknown) => emit(name, payload));
@@ -95,7 +95,7 @@ export type SendType =
   | 'START_GAME'
   | 'ASK_QUESTION'
   | 'ANSWER_QUESTION'
-  | 'REVEAL_GUESS'
+  | 'SUBMIT_RESULT'
   | 'NEXT_TURN';
 
 const ROUTES: Record<SendType, string> = {
@@ -105,7 +105,7 @@ const ROUTES: Record<SendType, string> = {
   START_GAME:      `${BASE}/api/game/start`,
   ASK_QUESTION:    `${BASE}/api/game/ask`,
   ANSWER_QUESTION: `${BASE}/api/game/answer`,
-  REVEAL_GUESS:    `${BASE}/api/game/reveal`,
+  SUBMIT_RESULT:   `${BASE}/api/game/submit-result`,
   NEXT_TURN:       `${BASE}/api/game/next-turn`,
 };
 

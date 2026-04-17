@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from 'react';
 import type { ReactNode } from 'react';
 import type { Dispatch } from 'react';
-import type { GameState, GameAction, Player } from '../types';
+import type { GameState, GameAction } from '../types';
 import { categories as defaultCategories } from '../categories';
 
 function normalizeCategories(categories: GameState['availableCategories']): GameState['availableCategories'] {
@@ -28,8 +28,13 @@ const initialState: GameState = {
   item: null,
   iAmOnHotSeat: false,
   questionLog: [],
-  revealed: null,
+  turnResult: null,
   error: null,
+  groups: [[], []],
+  scores: [0, 0],
+  guessingGroupIndex: 0,
+  timerStartedAt: null,
+  iAmGuessing: false,
 };
 
 function reducer(state: GameState, action: GameAction): GameState {
@@ -62,13 +67,14 @@ function reducer(state: GameState, action: GameAction): GameState {
       return { ...state, players: action.payload.players };
 
     case 'PLAYER_LEFT': {
-      const players: Player[] = action.payload.players
+      const players = action.payload.players
         ? action.payload.players
         : state.players.filter(p => p.id !== action.payload.playerId);
       return { ...state, players };
     }
 
-    case 'GAME_STARTED':
+    case 'GAME_STARTED': {
+      const groups = action.payload.groups;
       return {
         ...state,
         view: 'game',
@@ -78,20 +84,30 @@ function reducer(state: GameState, action: GameAction): GameState {
           ? normalizeCategories(action.payload.availableCategories)
           : state.availableCategories,
         selectedCategoryIds: action.payload.selectedCategoryIds ?? state.selectedCategoryIds,
+        groups,
+        scores: action.payload.scores,
+        guessingGroupIndex: 0,
         questionLog: [],
-        revealed: null,
+        turnResult: null,
       };
+    }
 
     case 'TURN_STARTED': {
-      const iAmOnHotSeat = action.payload.hotSeatPlayerId === state.myPlayerId;
+      const guessingGroupIndex = action.payload.guessingGroupIndex;
+      const guessingGroup = state.groups[guessingGroupIndex] ?? [];
+      const iAmGuessing = guessingGroup.includes(state.myPlayerId ?? '');
+      const iAmOnHotSeat = false; // no individual hot seat in team mode
       return {
         ...state,
-        hotSeatPlayerId: action.payload.hotSeatPlayerId,
+        hotSeatPlayerId: null,
         categoryId: action.payload.categoryId ?? state.categoryId,
         item: null,
         iAmOnHotSeat,
+        iAmGuessing,
+        guessingGroupIndex,
+        timerStartedAt: action.payload.timerStartedAt,
         questionLog: [],
-        revealed: null,
+        turnResult: null,
         players: action.payload.players ?? state.players,
       };
     }
@@ -119,14 +135,11 @@ function reducer(state: GameState, action: GameAction): GameState {
       return { ...state, questionLog: log };
     }
 
-    case 'ITEM_REVEALED':
+    case 'TURN_RESULT':
       return {
         ...state,
-        revealed: {
-          item: action.payload.item,
-          correct: action.payload.correct,
-          hotSeatPlayerName: action.payload.hotSeatPlayerName,
-        },
+        turnResult: action.payload,
+        scores: action.payload.scores,
       };
 
     case 'SET_MY_NAME':
