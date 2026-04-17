@@ -76,7 +76,6 @@ export default function GameView() {
 
   // Group name helper
   const groupLabel = (idx: 0 | 1) => idx === 0 ? 'קבוצה א׳' : 'קבוצה ב׳';
-  const answeringGroupIndex: 0 | 1 = guessingGroupIndex === 0 ? 1 : 0;
 
   // Timer color
   const timerColor = secondsLeft > 30 ? '#34D399' : secondsLeft > 10 ? '#FFE66D' : '#FF6B6B';
